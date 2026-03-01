@@ -1,55 +1,31 @@
-// =======================
 // INPUT
-// =======================
-
 var move = keyboard_check(vk_right) - keyboard_check(vk_left);
 var jump = keyboard_check_pressed(vk_up);
 
-// =======================
-// HORIZONTAL MOVEMENT
-// =======================
+// HORIZONTAL
+hsp = move * spd;
 
-var spd = 4;
-x += move * spd;
-
-
-// =======================
-// GRAVITY
-// =======================
-
-var grav = 0.5;
-var max_fall = 12;
-
-vspeed += grav;
-vspeed = clamp(vspeed, -100, max_fall);
-
-
-// =======================
-// VERTICAL MOVEMENT
-// =======================
-
-y += vspeed;
-
-
-// =======================
-// GROUND COLLISION
-// =======================
-
-if (place_meeting(x, y, obj_ground)) {
-
-    // Move out of ground
-    while (place_meeting(x, y, obj_ground)) {
-        y -= sign(vspeed);
+if (place_meeting(x + hsp, y, obj_ground)) {
+    while (!place_meeting(x + sign(hsp), y, obj_ground)) {
+        x += sign(hsp);
     }
-
-    vspeed = 0;
+    hsp = 0;
 }
+x += hsp;
 
+// GRAVITY
+vsp += grav;
 
-// =======================
-// JUMP (only if touching ground)
-// =======================
+// VERTICAL
+if (place_meeting(x, y + vsp, obj_ground)) {
+    while (!place_meeting(x, y + sign(vsp), obj_ground)) {
+        y += sign(vsp);
+    }
+    vsp = 0;
+}
+y += vsp;
 
+// JUMP
 if (jump && place_meeting(x, y + 1, obj_ground)) {
-    vspeed = -10;
+    vsp = -jump_power;
 }
